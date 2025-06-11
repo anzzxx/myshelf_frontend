@@ -1,12 +1,59 @@
-# React + Vite
+MyShelf Frontend
+MyShelf is a modern book management and contribution platform. This frontend application is built using React and interacts with a backend API to allow users to manage their personal book collections and contribute new books.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Features
+Browse and manage your book collection
 
-Currently, two official plugins are available:
+Contribute new books to the platform
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+filter books easily
 
-## Expanding the ESLint configuration
+Seamless integration with the MyShelf backend API
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Fast, responsive UI built with React
+
+Tech Stack
+Frontend: React, JSX, Tailwind 
+
+Package Manager: npm
+
+API Integration: Axios
+
+Getting Started
+Follow these steps to set up and run the frontend locally:
+
+1. Clone the Repository
+
+git clone https://github.com/anzzxx/myshelf_frontend/
+cd myshelf-frontend
+
+2. Install Dependencies
+   
+npm install
+
+4. Start the Development Server
+
+npm run server
+
+This will start the frontend app at:
+http://localhost:3000
+
+Ensure your backend server is running and the API base URL is correctly configured in the frontend.
+
+Project Structure 
+
+myshelf-frontend/
+├── public/
+├── src/
+│   ├── components/
+│   ├── pages/
+│   ├── services/
+│   ├── App.js
+│   └── index.js
+├── .env
+├── package.json
+└── README.md
+
+Invite Contribution
+Have ideas or improvements? Contributions are welcome!
+Feel free to open an issue or submit a pull request.
