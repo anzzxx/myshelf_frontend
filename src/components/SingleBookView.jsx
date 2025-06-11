@@ -8,7 +8,7 @@ function SingleBookView() {
   const [error, setError] = useState(null)
   const { book_id } = useParams()
 
-  const BASE_URL = 'https://myshelf-backend.onrender.com/'
+  const BASE_URL = 'http://127.0.0.1:8000/'
 
   const fetchBookData = async () => {
     try {

@@ -2,7 +2,7 @@ import axios from 'axios';
 import { logout } from '../utils/auth';
 
 const api = axios.create({
-    baseURL: 'https://myshelf-backend.onrender.com/',
+    baseURL: 'http://127.0.0.1:8000/',
 });
 
 api.interceptors.request.use((config) => {
@@ -31,7 +31,7 @@ api.interceptors.response.use(
                 }
 
                 const refreshInstance = axios.create();
-                const res = await refreshInstance.post('https://myshelf-backend.onrender.com/api/token/refresh/', {
+                const res = await refreshInstance.post('http://127.0.0.1:8000/api/token/refresh/', {
                     refresh: refreshToken,
                 });
 
