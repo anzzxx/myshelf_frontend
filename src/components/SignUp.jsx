@@ -54,7 +54,7 @@ const CompactSignUp = () => {
       console.log('Sign up data:', signupData);
 
       try {
-        const response = await axios.post('https://myshelf-backend-2.onrender.com/api/signup/', signupData);
+        const response = await axios.post('https://myshelf-backend.onrender.com/api/signup/', signupData);
         console.log('Signup successful:', response.data);
 
         // Show success alert

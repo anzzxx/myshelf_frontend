@@ -163,7 +163,7 @@ const UserProfile = () => {
               {(formData.profile_image || newProfileImage) && (
                 <img
                   src={typeof formData.profile_image === 'string' 
-                    ? `https://myshelf-backend-2.onrender.com/${formData.profile_image}`
+                    ? `https://myshelf-backend.onrender.com/${formData.profile_image}`
                     : formData.profile_image}
                   alt="Profile preview"
                   className="mt-2 h-24 w-24 object-cover rounded-full"
@@ -195,7 +195,7 @@ const UserProfile = () => {
             <div className="flex items-center mb-6">
               <img
                 src={profile.profile_image 
-                  ? `https://myshelf-backend-2.onrender.com${profile.profile_image}`
+                  ? `https://myshelf-backend.onrender.com/${profile.profile_image}`
                   : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='}
                 alt="Profile"
                 className="h-24 w-24 rounded-full object-cover mr-4"

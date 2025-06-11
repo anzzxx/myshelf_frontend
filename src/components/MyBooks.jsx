@@ -28,7 +28,7 @@ export function MyBooks() {
         bookId: book.book.toString(),
         title: book.book_title,
         author: book.book_author,
-        coverImage: `https://myshelf-backend-2.onrender.com${book.book_cover}`,
+        coverImage: `https://myshelf-backend.onrender.com${book.book_cover}`,
         addedDate: book.created_at,
         status: book.status,
         started_at: book.started_at,
