@@ -40,19 +40,6 @@ http://localhost:3000
 
 Ensure your backend server is running and the API base URL is correctly configured in the frontend.
 
-Project Structure 
-
-myshelf-frontend/
-├── public/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   ├── services/
-│   ├── App.js
-│   └── index.js
-├── .env
-├── package.json
-└── README.md
 
 Invite Contribution
 Have ideas or improvements? Contributions are welcome!
