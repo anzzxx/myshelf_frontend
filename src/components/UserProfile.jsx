@@ -28,8 +28,10 @@ const UserProfile = () => {
         first_name: response.data.data.first_name || '',
         last_name: response.data.data.last_name || '',
         phone_number: response.data.data.phone_number || '',
-        profile_image: response.data.data.profile_image || null,
+        profile_image: `https://myshelf-backend-1.onrender.com${response.data.data.profile_image}` || null,
       });
+      console.log(setFormData);
+      
     } catch (error) {
       console.error("Error fetching profile:", error);
       Swal.fire('Error!', 'Failed to fetch profile details.', 'error');
@@ -101,7 +103,7 @@ const UserProfile = () => {
   if (!profile) {
     return <div className="container mx-auto p-6">Loading...</div>;
   }
-
+  console.log(formData.profile_image,"prwork")
   return (
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
@@ -160,11 +162,13 @@ const UserProfile = () => {
                 className="w-full p-2 border rounded"
                 ref={profileImageInputRef}
               />
-              {(formData.profile_image || newProfileImage) && (
+              {
+              
+              (formData.profile_image || newProfileImage) && (
                 <img
                   src={typeof formData.profile_image === 'string' 
-                    ? `https://myshelf-backend-1.onrender.com/${formData.profile_image}`
-                    : formData.profile_image}
+                    ? `${formData.profile_image}`
+                    : `${formData.profile_image}`}
                   alt="Profile preview"
                   className="mt-2 h-24 w-24 object-cover rounded-full"
                   onError={(e) => {
@@ -195,7 +199,7 @@ const UserProfile = () => {
             <div className="flex items-center mb-6">
               <img
                 src={profile.profile_image 
-                  ? `/${profile.profile_image}`
+                  ? `https://myshelf-backend-1.onrender.com${profile.profile_image}`
                   : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='}
                 alt="Profile"
                 className="h-24 w-24 rounded-full object-cover mr-4"

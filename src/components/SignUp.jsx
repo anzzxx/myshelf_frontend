@@ -15,6 +15,7 @@ const CompactSignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -23,24 +24,66 @@ const CompactSignUp = () => {
       ...prev,
       [name]: value,
     }));
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
 
   const validateForm = () => {
     const newErrors = {};
+    const nameRegex = /^[a-zA-Z]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^\d{10}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{5,}$/;
 
-    if (!formData.email) newErrors.email = 'Required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Invalid email';
+    // First Name validation
+    if (!formData.first_name.trim()) {
+      newErrors.first_name = 'First name is required';
+    } else if (!nameRegex.test(formData.first_name)) {
+      newErrors.first_name = 'Only letters allowed';
+    } else if (formData.first_name.length < 2) {
+      newErrors.first_name = 'Minimum 2 characters';
+    }
 
-    if (!formData.first_name) newErrors.first_name = 'Required';
-    if (!formData.last_name) newErrors.last_name = 'Required';
+    // Last Name validation
+    if (!formData.last_name.trim()) {
+      newErrors.last_name = 'Last name is required';
+    } else if (!nameRegex.test(formData.last_name)) {
+      newErrors.last_name = 'Only letters allowed';
+    } else if (formData.last_name.length < 2) {
+      newErrors.last_name = 'Minimum 2 characters';
+    }
 
-    if (!formData.phone_number) newErrors.phone_number = 'Required';
-    else if (!/^\d{10}$/.test(formData.phone_number)) newErrors.phone_number = '10 digits only';
+    // Email validation
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!emailRegex.test(formData.email)) {
+      newErrors.email = 'Invalid email format';
+    }
 
-    if (!formData.password) newErrors.password = 'Required';
-    else if (formData.password.length < 8) newErrors.password = 'Min 8 chars';
+    // Phone validation
+    if (!formData.phone_number.trim()) {
+      newErrors.phone_number = 'Phone number is required';
+    } else if (!phoneRegex.test(formData.phone_number)) {
+      newErrors.phone_number = 'Must be 10 digits';
+    }
 
-    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'No match';
+    // Password validation
+    if (!formData.password.trim()) {
+      newErrors.password = 'Password is required';
+    }
+    // } else if (!passwordRegex.test(formData.password)) {
+    //   newErrors.password = 'Must contain: 5+ chars, 1 uppercase, 1 lowercase, 1 number, 1 special char';
+    // }
+
+    // Confirm Password validation
+    if (!formData.confirmPassword.trim()) {
+      newErrors.confirmPassword = 'Please confirm password';
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -48,26 +91,26 @@ const CompactSignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    
     if (validateForm()) {
       // Exclude confirmPassword from the data sent to the backend
       const { confirmPassword, ...signupData } = formData;
-      console.log('Sign up data:', signupData);
 
       try {
         const response = await axios.post('https://myshelf-backend-1.onrender.com/api/signup/', signupData);
-        console.log('Signup successful:', response.data);
 
         // Show success alert
-        Swal.fire({
+        await Swal.fire({
           icon: 'success',
           title: 'Signup Successful',
           text: 'Your account has been created! Redirecting to login...',
           timer: 2000,
           timerProgressBar: true,
           showConfirmButton: false,
-        }).then(() => {
-          navigate('/login');
         });
+        
+        navigate('/login');
       } catch (error) {
         console.error('Signup error:', error.response ? error.response.data : error.message);
 
@@ -75,27 +118,48 @@ const CompactSignUp = () => {
         let errorMessage = 'An unexpected error occurred. Please try again.';
         if (error.response) {
           if (error.response.status === 400 && error.response.data) {
-            // Handle field-specific errors from backend (e.g., email already exists)
             const backendErrors = error.response.data;
+            
+            // Map backend errors to frontend fields
+            const errorMap = {
+              email: 'email',
+              phone_number: 'phone_number',
+              first_name: 'first_name',
+              last_name: 'last_name',
+              password: 'password',
+              non_field_errors: 'form',
+              detail: 'form'
+            };
+
+            // Update frontend errors
+            const frontendErrors = {};
+            Object.keys(backendErrors).forEach(key => {
+              if (errorMap[key]) {
+                frontendErrors[errorMap[key]] = Array.isArray(backendErrors[key]) 
+                  ? backendErrors[key].join(' ') 
+                  : backendErrors[key];
+              }
+            });
+
+            setErrors(frontendErrors);
+
+            // Set the main error message
             if (backendErrors.email) {
-              errorMessage = backendErrors.email[0];
+              errorMessage = `Email: ${backendErrors.email.join(' ')}`;
             } else if (backendErrors.phone_number) {
-              errorMessage = backendErrors.phone_number[0];
+              errorMessage = `Phone: ${backendErrors.phone_number.join(' ')}`;
             } else if (backendErrors.non_field_errors) {
-              errorMessage = backendErrors.non_field_errors[0];
+              errorMessage = backendErrors.non_field_errors.join(' ');
             } else if (backendErrors.detail) {
               errorMessage = backendErrors.detail;
             }
-            // Update frontend errors for field-specific validation
-            setErrors((prev) => ({
-              ...prev,
-              ...backendErrors,
-            }));
+          } else if (error.response.status === 500) {
+            errorMessage = 'Server error. Please try again later.';
           }
         }
 
         // Show error alert
-        Swal.fire({
+        await Swal.fire({
           icon: 'error',
           title: 'Signup Failed',
           text: errorMessage,
@@ -104,6 +168,8 @@ const CompactSignUp = () => {
         });
       }
     }
+    
+    setIsSubmitting(false);
   };
 
   return (
@@ -132,6 +198,7 @@ const CompactSignUp = () => {
                 className={`w-full p-2 text-sm border ${
                   errors.first_name ? 'border-red-500' : 'border-gray-300'
                 } rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500`}
+                disabled={isSubmitting}
               />
               {errors.first_name && <p className="text-red-500 text-xs mt-1">{errors.first_name}</p>}
             </div>
@@ -145,6 +212,7 @@ const CompactSignUp = () => {
                 className={`w-full p-2 text-sm border ${
                   errors.last_name ? 'border-red-500' : 'border-gray-300'
                 } rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500`}
+                disabled={isSubmitting}
               />
               {errors.last_name && <p className="text-red-500 text-xs mt-1">{errors.last_name}</p>}
             </div>
@@ -160,6 +228,7 @@ const CompactSignUp = () => {
               className={`w-full p-2 text-sm border ${
                 errors.email ? 'border-red-500' : 'border-gray-300'
               } rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500`}
+              disabled={isSubmitting}
             />
             {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
           </div>
@@ -174,6 +243,7 @@ const CompactSignUp = () => {
               className={`w-full p-2 text-sm border ${
                 errors.phone_number ? 'border-red-500' : 'border-gray-300'
               } rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500`}
+              disabled={isSubmitting}
             />
             {errors.phone_number && <p className="text-red-500 text-xs mt-1">{errors.phone_number}</p>}
           </div>
@@ -188,11 +258,13 @@ const CompactSignUp = () => {
               className={`w-full p-2 text-sm border ${
                 errors.password ? 'border-red-500' : 'border-gray-300'
               } rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500`}
+              disabled={isSubmitting}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-2 top-2 text-gray-500 hover:text-gray-700"
+              disabled={isSubmitting}
             >
               {showPassword ? (
                 <svg
@@ -233,6 +305,15 @@ const CompactSignUp = () => {
               )}
             </button>
             {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+            {!errors.password && formData.password && (
+              <p className="text-gray-500 text-xs mt-1">
+                Password strength: {
+                  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(formData.password)
+                  ? 'Strong' 
+                  : 'Weak (needs uppercase, number, and special char)'
+                }
+              </p>
+            )}
           </div>
 
           <div className="mb-4 relative">
@@ -245,11 +326,13 @@ const CompactSignUp = () => {
               className={`w-full p-2 text-sm border ${
                 errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
               } rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500`}
+              disabled={isSubmitting}
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="absolute right-2 top-2 text-gray-500 hover:text-gray-700"
+              disabled={isSubmitting}
             >
               {showConfirmPassword ? (
                 <svg
@@ -294,9 +377,22 @@ const CompactSignUp = () => {
 
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg text-sm transition duration-200"
+            className={`w-full ${
+              isSubmitting ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'
+            } text-white font-medium py-2 px-4 rounded-lg text-sm transition duration-200 flex justify-center items-center`}
+            disabled={isSubmitting}
           >
-            Sign Up
+            {isSubmitting ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+              </>
+            ) : (
+              'Sign Up'
+            )}
           </button>
         </form>
 
@@ -304,11 +400,19 @@ const CompactSignUp = () => {
         <div className="px-6 py-3 bg-gray-50 border-t border-gray-200 text-center">
           <p className="text-gray-600 text-xs">
             Already have an account?{' '}
-            <button onClick={() => navigate('/login')} className="text-blue-600 hover:underline">
+            <button 
+              onClick={() => navigate('/login')} 
+              className="text-blue-600 hover:underline"
+              disabled={isSubmitting}
+            >
               Login
             </button>
             <br />
-            <button onClick={() => navigate('/')} className="text-blue-600 hover:underline">
+            <button 
+              onClick={() => navigate('/')} 
+              className="text-blue-600 hover:underline"
+              disabled={isSubmitting}
+            >
               Guest Mode
             </button>
           </p>
