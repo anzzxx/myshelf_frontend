@@ -163,7 +163,7 @@ const UserProfile = () => {
               {(formData.profile_image || newProfileImage) && (
                 <img
                   src={typeof formData.profile_image === 'string' 
-                    ? `https://myshelf-backend.onrender.com/${formData.profile_image}`
+                    ? `https://myshelf-backend-1.onrender.com/${formData.profile_image}`
                     : formData.profile_image}
                   alt="Profile preview"
                   className="mt-2 h-24 w-24 object-cover rounded-full"

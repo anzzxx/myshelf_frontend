@@ -14,7 +14,7 @@ const CompactLogin = () => {
     console.log('Login attempt:', { email, password });
 
     try {
-      const response = await axios.post('https://myshelf-backend.onrender.com/api/login/', {
+      const response = await axios.post('https://myshelf-backend-1.onrender.com/api/login/', {
         email: email,
         password: password,
       });
