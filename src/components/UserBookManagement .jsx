@@ -44,8 +44,13 @@ const UserBookManagement = () => {
 
   const fetchGenres = async () => {
     try {
-      const response = await api.get('api/store/genre/');
-      setGenres(response.data.data);
+      // const response = await api.get('api/store/genre/');
+      const response = await api.get('api/store/genres/');
+      // console.log(responses.data,"globel scope");
+      // console.log(response.data,"local scope");
+      
+      
+      setGenres(response.data.results);
     } catch (error) {
       console.error("Error fetching genres:", error);
     }
